@@ -1,4 +1,4 @@
 {
     "mongoURI":
-      "INCLUDE CONN STRING HERE"
+      "mongodb+srv://saarthak2002:aB%40dCoffee2021%21@cluster0.cjcoplg.mongodb.net/?retryWrites=true&w=majority"
 }

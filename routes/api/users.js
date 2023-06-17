@@ -41,4 +41,12 @@ router.post('/signup', (request, result) => {
         .catch(err => result.status(404).json({ nouserfound: 'Error signing up' ,error:true }));
 });
 
+// search for users by username
+router.get('/search/:searchString', (request, result) => {
+    const regex = new RegExp(request.params.searchString, 'i');
+    User.find({ username: { $regex: regex } }) // {$text: {$search: request.params.searchString}}
+        .then(users => result.json(users))
+        .catch(err => result.status(404).json({ nousersfound: 'No users found' }));
+});
+
 module.exports = router;

@@ -15,4 +15,12 @@ router.post('/', (request, result) => {
         .catch(err => result.status(400).json({ error: 'Unable to add this post' }));
 })
 
+// get posts for a user
+router.get('/user/:id', (request, result) => {
+    Post.find({ postedByUser: request.params.id })
+        .sort({ createdAt: -1 })
+        .then(posts => result.json(posts))
+        .catch(err => result.status(404).json({ nopostsfound: 'No posts found' }));
+});
+
 module.exports = router;

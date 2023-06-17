@@ -15,6 +15,14 @@ const PostSchema = new mongoose.Schema(
         },
         aesthetic: {
             type: String,
+        },
+        postedByUser: {
+            type: mongoose.Schema.Types.ObjectId,
+            required: true,
+        },
+        postedByUserName: {
+            type: String,
+            required: true,
         }
     },
     {   

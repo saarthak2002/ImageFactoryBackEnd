@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 
 const User = require('../../models/User.js');
+const UserDetails = require('../../models/UserDetails.js');
 
 router.get('/', (request, result) => {
     User.find()
@@ -34,7 +35,11 @@ router.post('/signup', (request, result) => {
             }
             else {
                 User.create(request.body)
-                    .then(user => result.json({ msg: 'User added successfully', username: user.username, _id: user._id, email: user.email, error:false }))
+                    .then( (user) => {
+                        UserDetails.create({user: user._id, followers: [], following: []})
+                                   .then(userDetails => result.json({ msg: 'User added successfully', username: user.username, _id: user._id, email: user.email, error:false }))
+                                   .catch(err => result.status(400).json({ error: 'Unable to add this user', text: err ,error:true}));
+                    })
                     .catch(err => result.status(400).json({ error: 'Unable to add this user', text: err ,error:true}));
             }
         })

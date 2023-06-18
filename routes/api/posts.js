@@ -9,6 +9,13 @@ router.get('/', (request, result) => {
         .catch(err => result.status(404).json({ nopostsfound: 'No posts found' }));
 })
 
+// get post by id
+router.get('/:id', (request, result) => {
+    Post.findById(request.params.id)
+        .then(post => result.json(post))
+        .catch(err => result.status(404).json({ nopostfound: 'No post found' }));
+})
+
 router.post('/', (request, result) => {
     Post.create(request.body)
         .then(post => result.json({ msg: 'Post added successfully' }))

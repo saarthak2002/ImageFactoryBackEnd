@@ -50,4 +50,42 @@ router.get('/feed/:user_id', (request, result) => {
         .catch(err => result.status(404).json({ nouserdetailsfound: 'No user details found' }));
 })
 
+router.post('/like/:id', (request, result) => {
+    const currentUser = request.body.currentUser;
+    Post
+        .findById(request.params.id)
+        .then((post) => {
+            if(post.likedBy.includes(currentUser)) {
+                result.json({ msg: 'Post already liked', success:false });
+            }
+            else {
+                post.likedBy.push(currentUser);
+                post.save();
+                result.json({ success:true, msg: 'Post liked successfully', userId: currentUser, postID: post._id});
+            }
+        })
+        .catch(err => result.status(404).json({ nopostfound: 'No post found', error: err }));
+});
+
+router.post('/unlike/:id', (request, result) => {
+    const currentUser = request.body.currentUser;
+    Post
+        .findById(request.params.id)
+        .then((post) => {
+            if(post.likedBy.includes(currentUser)) {
+                // remove the user from the likedBy array
+                const index = post.likedBy.indexOf(currentUser);
+                if (index > -1) {
+                    post.likedBy.splice(index, 1);
+                    post.save();
+                    result.json({ success:true, msg: 'Post unliked successfully', userId: currentUser, postID: post._id});
+                }
+            }
+            else {
+                result.json({ msg: 'Post not already liked', success:false });
+            }
+        })
+        .catch(err => result.status(404).json({ nopostfound: 'No post found', error: err }));
+});
+
 module.exports = router;

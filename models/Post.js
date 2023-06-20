@@ -23,6 +23,10 @@ const PostSchema = new mongoose.Schema(
         postedByUserName: {
             type: String,
             required: true,
+        },
+        likedBy: {
+            type: [mongoose.Schema.Types.ObjectId],
+            required: true,
         }
     },
     {   

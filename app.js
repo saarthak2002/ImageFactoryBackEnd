@@ -6,6 +6,7 @@ const cors = require('cors');
 posts = require('./routes/api/posts.js');
 users = require('./routes/api/users.js');
 userdetails = require('./routes/api/userdetails.js');
+comments = require('./routes/api/comments.js');
 ///////////////////////////
 
 const app = express();
@@ -21,6 +22,7 @@ app.get('/', (req, res) => res.send('Hello world!'));
 app.use('/api/posts', posts);
 app.use('/api/users', users);
 app.use('/api/userdetails', userdetails);
+app.use('/api/comments', comments);
 ///////////////////////////////
 
 const port = process.env.PORT || 8082;

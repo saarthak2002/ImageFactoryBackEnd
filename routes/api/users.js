@@ -36,7 +36,7 @@ router.post('/signup', (request, result) => {
             else {
                 User.create(request.body)
                     .then( (user) => {
-                        UserDetails.create({user: user._id, followers: [], following: []})
+                        UserDetails.create({user: user._id, followers: [], following: [], profilePicture:'', bio:''}) // Add here
                                    .then(userDetails => result.json({ msg: 'User added successfully', username: user.username, _id: user._id, email: user.email, error:false }))
                                    .catch(err => result.status(400).json({ error: 'Unable to add this user', text: err ,error:true}));
                     })
@@ -49,8 +49,28 @@ router.post('/signup', (request, result) => {
 // search for users by username
 router.get('/search/:searchString', (request, result) => {
     const regex = new RegExp(request.params.searchString, 'i');
-    User.find({ username: { $regex: regex } }) // {$text: {$search: request.params.searchString}}
-        .then(users => result.json(users))
+    User
+        .find({ username: { $regex: regex } })
+        .then(users => {
+            UserDetails
+                .find({ user: { $in: users.map(user => user._id) } })
+                .then(userDetails => {
+                    if(userDetails.length > 0) {
+                        const updatedUsers = users.map(user => {
+                            const userDetailsObj = userDetails.find(userDetails => userDetails.user.equals(user._id));
+                            if(userDetailsObj) {
+                                return { ...user._doc, profilePicture: userDetailsObj.profilePicture, bio: userDetailsObj.bio };
+                            }
+                            return user;
+                        })
+                        result.json(updatedUsers);
+                    }
+                    else {
+                        result.json(users);
+                    }
+                })
+                .catch(err => result.status(404).json({ nousersfound: 'No users found' }));    
+        })
         .catch(err => result.status(404).json({ nousersfound: 'No users found' }));
 });
 

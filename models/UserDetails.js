@@ -13,6 +13,12 @@ const UserDetailsSchema = new mongoose.Schema({
         type: [mongoose.Schema.Types.ObjectId],
         required: true
     },
+    profilePicture: {
+        type: String,
+    },
+    bio: {
+        type: String,
+    }
 });
 
 module.exports = UserDetails = mongoose.model('userdetails', UserDetailsSchema);

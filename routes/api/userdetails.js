@@ -73,4 +73,22 @@ router.post('/unfollow', (request,result) => {
                .catch(err => result.status(400).json({ error: 'Unable to unfollow this user', text: err ,error:true}));
 });
 
+// change profile picture
+router.post('/profilepicture', (request, result) => {
+    const user = request.body.user;
+    const profilePicture = request.body.profilePicture;
+    console.log(user);
+    console.log(profilePicture);
+
+    UserDetails
+        .findOne({user: user})
+        .then( (userDetails) => {
+            userDetails.profilePicture = profilePicture;
+            userDetails.save();
+            result.json({ msg: 'Profile picture changed successfully', error:false })
+        })
+        .catch(err => result.status(400).json({ error: 'Unable to change profile picture', text: err ,error:true}));
+
+});
+
 module.exports = router;

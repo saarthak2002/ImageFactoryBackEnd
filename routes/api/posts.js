@@ -40,14 +40,33 @@ router.get('/feed/:user_id', (request, result) => {
             if(userDetails.following.length > 0) {
                 Post.find({ postedByUser: { $in: userDetails.following } })
                     .sort({ createdAt: -1 })
-                    .then(posts => result.json(posts))
-                    .catch(err => result.status(404).json({ nopostsfound: 'No posts found' }));
+                    .then(posts => {
+                        UserDetails
+                            .find({ user: { $in: posts.map(post => post.postedByUser) } })
+                            .then(userDetails => {
+                                if(userDetails.length > 0) {
+                                    const updatedPosts = posts.map(post => {
+                                        const userDetailsObj = userDetails.find(userDetails => userDetails.user.equals(post.postedByUser));
+                                        if(userDetailsObj) {
+                                            return { ...post._doc, profilePicture: userDetailsObj.profilePicture };
+                                        }
+                                        return post;
+                                    })
+                                    result.json(updatedPosts);
+                                }
+                                else {
+                                    result.json(posts);
+                                }
+                            })
+                            .catch(err => result.status(404).json({ nousersfound: 'No users details found', error: err }));
+                    })
+                    .catch(err => result.status(404).json({ nopostsfound: 'No posts found', error: err }));
             }
             else {
                 result.json([]);
             }
         })
-        .catch(err => result.status(404).json({ nouserdetailsfound: 'No user details found' }));
+        .catch(err => result.status(404).json({ nouserdetailsfound: 'No user details found', error: err }));
 })
 
 router.post('/like/:id', (request, result) => {

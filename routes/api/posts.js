@@ -33,13 +33,15 @@ router.get('/user/:id', (request, result) => {
 });
 
 // get feed for logged in user
-router.get('/feed/:user_id', (request, result) => {
+router.post('/feed/:user_id', (request, result) => {
+    const limit = request.body.limit;
     UserDetails
         .findOne({ user: request.params.user_id })
         .then(userDetails => {
             if(userDetails.following.length > 0) {
                 Post.find({ postedByUser: { $in: userDetails.following } })
                     .sort({ createdAt: -1 })
+                    .limit(limit)
                     .then(posts => {
                         UserDetails
                             .find({ user: { $in: posts.map(post => post.postedByUser) } })

@@ -4,7 +4,8 @@ const router = express.Router();
 const UserDetails = require('../../models/UserDetails.js');
 
 router.get('/', (request, result) => {
-    UserDetails.find()
+    UserDetails
+        .find()
         .then(userDetails => result.json(userDetails))
         .catch(err => result.status(404).json({ nopostsfound: 'No details found', txt: err }));
 });
@@ -12,17 +13,19 @@ router.get('/', (request, result) => {
 // get user details by user id
 
 router.get('/user/:user_id', (request, result) => {
-    UserDetails.findOne({ user: request.params.user_id })
+    UserDetails
+        .findOne({ user: request.params.user_id })
         .then(userDetails => result.json(userDetails))
         .catch(err => result.status(404).json({ nodetailsfound: 'No details found', txt: err }));
 });
 
 // add a follower
-router.post('/follow', (request, result) => { // use UserDetails instead
+router.post('/follow', (request, result) => {
     const currentUser = request.body.currentUser;
     const userToFollow = request.body.userToFollow;
     
-    UserDetails.findOne({user: currentUser})
+    UserDetails
+        .findOne({user: currentUser})
         .then( (userdetails) => {
             if(userdetails.following.includes(userToFollow)) {
                 result.json({ msg: 'Already following this user', error:true })
@@ -30,7 +33,8 @@ router.post('/follow', (request, result) => { // use UserDetails instead
             else {
                 userdetails.following.push(userToFollow); // add profile user to following list of user who made request
                 userdetails.save();
-                UserDetails.findOne({user: userToFollow})
+                UserDetails
+                    .findOne({user: userToFollow})
                     .then( (userdetails) => {
                         userdetails.followers.push(currentUser); // add user who made request to followers list of profile user
                         userdetails.save();
@@ -47,30 +51,31 @@ router.post('/unfollow', (request,result) => {
     const currentUser = request.body.currentUser;
     const userToUnfollow = request.body.userToUnfollow;
 
-    UserDetails.findOne({user: currentUser})
-               .then( (userDetails) => {
-                    if(!userDetails.following.includes(userToUnfollow)) {
-                        result.json({ msg: 'Does not follow this user', error:true })
-                    }
-                    else {
-                        const index = userDetails.following.indexOf(userToUnfollow);
-                        if (index > -1) {
-                            userDetails.following.splice(index, 1);
-                            userDetails.save();
-                        }
-                        UserDetails.findOne({user: userToUnfollow})
-                                   .then( (userDetails) => {
-                                        const index = userDetails.followers.indexOf(currentUser);
-                                        if (index > -1) {
-                                            userDetails.followers.splice(index, 1);
-                                            userDetails.save();
-                                            result.json({ msg: 'User unfollowed successfully', error:false })
-                                        }
-                                   })
-                                   .catch(err => result.status(400).json({ error: 'Unable to unfollow this user', text: err ,error:true}));
-                    }
-               })
-               .catch(err => result.status(400).json({ error: 'Unable to unfollow this user', text: err ,error:true}));
+    UserDetails
+        .findOne({user: currentUser})
+        .then( (userDetails) => {
+            if(!userDetails.following.includes(userToUnfollow)) {
+                result.json({ msg: 'Does not follow this user', error:true })
+            }
+            else {
+                const index = userDetails.following.indexOf(userToUnfollow);
+                if (index > -1) {
+                    userDetails.following.splice(index, 1);
+                    userDetails.save();
+                }
+                UserDetails.findOne({user: userToUnfollow})
+                            .then( (userDetails) => {
+                                const index = userDetails.followers.indexOf(currentUser);
+                                if (index > -1) {
+                                    userDetails.followers.splice(index, 1);
+                                    userDetails.save();
+                                    result.json({ msg: 'User unfollowed successfully', error:false })
+                                }
+                            })
+                            .catch(err => result.status(400).json({ error: 'Unable to unfollow this user', text: err ,error:true}));
+            }
+        })
+        .catch(err => result.status(400).json({ error: 'Unable to unfollow this user', text: err ,error:true}));
 });
 
 // change profile picture

@@ -109,4 +109,19 @@ router.post('/unlike/:id', (request, result) => {
         .catch(err => result.status(404).json({ nopostfound: 'No post found', error: err }));
 });
 
+// edit caption
+router.post('/edit/:id', (request, result) => {
+    const postId = request.params.id;
+    const newCaption = request.body.newCaption;
+    Post
+        .findById(postId)
+        .then((post) => {
+            post.caption = newCaption;
+            post.save();
+            result.json({ success:true, msg: 'Post caption updated successfully', postID: post._id});
+        })
+        .catch(err => result.status(404).json({ nopostfound: 'No post found', error: err }));
+
+});
+
 module.exports = router;

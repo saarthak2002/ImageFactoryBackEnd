@@ -96,4 +96,19 @@ router.post('/profilepicture', (request, result) => {
 
 });
 
+// edit bio
+router.post('/bio/:id', (request, result) => {
+    const bio = request.body.bio;
+    const userDetailsId = request.params.id;
+    console.log(userDetailsId +  ' change bio to ' + bio);
+    UserDetails
+        .findById(userDetailsId)
+        .then( (userDetails) => {
+            userDetails.bio = bio;
+            userDetails.save();
+            result.json({ msg: 'Bio changed successfully', error:false })
+        })
+        .catch(err => result.status(400).json({ error: 'Unable to change bio', text: err ,error:true}));
+});
+
 module.exports = router;

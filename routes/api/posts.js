@@ -3,6 +3,16 @@ const router = express.Router();
 
 const Post = require('../../models/Post.js');
 const UserDetails = require('../../models/UserDetails.js');
+const Comment = require('../../models/Comment.js');
+
+const cloudinary = require('cloudinary').v2;
+// Return "https" URLs by setting secure: true
+cloudinary.config({
+  secure: true
+});
+
+// Log the configuration
+console.log(cloudinary.config());
 
 router.get('/', (request, result) => {
     Post.find()
@@ -122,6 +132,38 @@ router.post('/edit/:id', (request, result) => {
         })
         .catch(err => result.status(404).json({ nopostfound: 'No post found', error: err }));
 
+});
+
+// delete post
+router.delete('/:id', (request, result) => {
+    const postId = request.params.id;
+    Post
+        .findById(postId)
+        .then((post) => {
+            const urlParts = post.image.split('/');
+            const fileName = urlParts.pop();
+            fileNameParts = fileName.split('.');
+            const publicId = fileNameParts[0];
+
+            // delete image from CDN
+            cloudinary.uploader
+                .destroy(publicId, { invalidate: true })
+                .then( (res) => {
+                    // delete comments on post
+                    Comment
+                        .deleteMany({ postId: postId })
+                        .then(() => {      
+                            // delete post
+                            post.deleteOne();
+                            result.json({ msg: 'Post deleted successfully' });
+                        })
+                })
+                .catch(err => {
+                    console.log('error deleting image from CDN: '+ err);
+                    result.status(404).json({ nopostfound: 'No post found', error: err })
+                });
+        })
+        .catch(err => result.status(404).json({ nopostfound: 'No post found', error: err })); 
 });
 
 module.exports = router;

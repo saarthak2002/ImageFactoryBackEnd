@@ -11,9 +11,6 @@ cloudinary.config({
   secure: true
 });
 
-// Log the configuration
-console.log(cloudinary.config());
-
 router.get('/', (request, result) => {
     Post.find()
         .then(posts => result.json(posts))

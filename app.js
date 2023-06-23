@@ -17,7 +17,7 @@ connectDB();
 
 app.use(cors({ origin: true, credentials: true }));
 app.use(express.json({ extended: false }));
-app.get('/', (req, res) => res.send('Hello world!'));
+app.get('/', (req, res) => res.send('Welcome to Image Factory!'));
 
 ////// Use Routes Here ////////
 app.use('/api/posts', posts);

@@ -74,3 +74,9 @@ A POST request made to this endpoint with the details of the comment in the requ
 
 ### .../api/comments/:post_id
 This endpoint can be used to get a JSON array of all the comments on a particular post specified by post_id.
+
+## Development
+The primary frameworks and libraries used in developing this API are Node.js, Express, and Mongoose. The Cloudinary CDN and API were used to handle image storage and delivery. The database for the application is MongoDB running on MongoDB Atlas, and the REST API itself is deployed on Heroku.
+
+## Copyright
+This application is developed by Saarthak Gupta © 2023.

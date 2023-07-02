@@ -44,3 +44,33 @@ Updates the profile picture link (from the CDN) in the UserDetails object of the
 
 ### .../api/userdetails/bio/:id
 Updates the bio field of the UserDetails object of the current user.
+
+### .../api/posts/
+Creates a new post in the database when a POST request is made to this endpoint with the details of the post in the request body.
+
+### .../api/posts/:id
+Returns a JSON response to the client that contains the details of a particular post.
+
+### .../api/posts/user/:id
+Returns a JSON array that contains all the posts made by a particular user.
+
+### .../api/posts/feed/:user_id
+This endpoint returns an array of posts to the client for the custom feed view of each user. The posts depend on what other users the currently logged-in user follows and are sent in reverse chronological order. This endpoint also implements pagination- the request body contains a limit for the number of posts sent to the client. As the user scrolls to the bottom of their feed, another API call is made to this endpoint with a higher limit to load more posts.
+
+### .../api/posts/like/:id
+Adds the logged-in user to the likedBy[] array of the post with the specified id.
+
+### .../api/posts/unlike/:id
+Removes the logged-in user from the likedBy[] array of the post with the specified id.
+
+### .../api/posts/edit/:id
+This endpoint modifies a post in the database to update various details like the post caption.
+
+### .../api/posts/:id
+A DELETE request made to this endpoint removes a specific post from the database.
+
+### .../api/comments
+A POST request made to this endpoint with the details of the comment in the request body creates a new Comment in the database.
+
+### .../api/comments/:post_id
+This endpoint can be used to get a JSON array of all the comments on a particular post specified by post_id.
